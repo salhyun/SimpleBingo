@@ -64,6 +64,8 @@ public class UIManager : MonoBehaviour {
 
         string[] bingoChar = { "B", "I", "N", "G", "O" };
 
+        testBitConvert();
+
         Rect rtBingoPanel = BingoPanel.GetComponent<RectTransform>().rect;//RectTransform은 local 좌표임.
         Rect rtNumberLine = numberLine.GetComponent<RectTransform>().rect;
 
@@ -101,6 +103,21 @@ public class UIManager : MonoBehaviour {
 
         Debug.Log("Start end");
 	}
+
+    void testBitConvert()
+    {
+        int num = 10;
+
+        byte[] message = MySocketMessage.addMessageHeader(System.Text.Encoding.Default.GetBytes("I am your father"), 12, 32);
+
+        int type = MySocketMessage.getMessageType(message);
+        int kind = MySocketMessage.getMessageKind(message);
+        int size = MySocketMessage.getMessageSize(message);
+
+        string body = MySocketMessage.getMessageBodyString(message);
+
+        Debug.Log("testBitConvert");
+    }
 	
 	// Update is called once per frame
 	void Update () {
