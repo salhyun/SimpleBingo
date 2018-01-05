@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour {
 
-    public struct MyBingoCard
+    public struct MyBingoCard//추상적인 개념의 빙고카드
     {
         public GameObject[,] numbers;
 
@@ -57,7 +57,7 @@ public class UIManager : MonoBehaviour {
 
     public Camera mainCamera;
     public GameObject BingoPanel;
-    public GameObject numberLine;
+    public Transform pfCallerBall;
 
 	// Use this for initialization
 	void Start () {
@@ -66,36 +66,7 @@ public class UIManager : MonoBehaviour {
 
         testBitConvert();
 
-        Rect rtBingoPanel = BingoPanel.GetComponent<RectTransform>().rect;//RectTransform은 local 좌표임.
-        Rect rtNumberLine = numberLine.GetComponent<RectTransform>().rect;
-
-        float offsetX = rtBingoPanel.min.x;//좌측
-        float offsetY = rtBingoPanel.min.y+(rtNumberLine.height* BINGONUM_COL);//하단
-        Vector3 pos;
-
-        for(int i=0; i<5; i++)
-        {
-            int[] columnNums = createColumnNum(i);
-            for(int n=0; n<5; n++)
-            {
-                numberLine = GameObject.Find("number" + bingoChar[i] + "Line" + n);
-
-                if (i == 2 && n == 2)
-                    numberLine.GetComponentInChildren<UnityEngine.UI.Text>().text = "FREE";
-                else
-                    numberLine.GetComponentInChildren<UnityEngine.UI.Text>().text = columnNums[n].ToString();
-
-                //MyBingoCard.numbers[i, n] = columnNums[n];
-                myBingoCard.numbers[i, n] = numberLine;
-
-                Rect rt =  numberLine.GetComponent<RectTransform>().rect;
-
-                pos.x = offsetX + (i * rt.width) + rt.width/2.0f;
-                pos.y = offsetY - (n * rt.height) - rt.height/2.0f;
-                pos.z = numberLine.transform.position.z;
-                numberLine.transform.position = BingoPanel.transform.TransformPoint(pos);//RectTransform은 local 좌표임. 그래서 월드좌표로 변환해준다.
-            }
-        }
+        resetBingoCard(BingoPanel, myBingoCard);
 
         resetBingoNumber(BingoNumbers);
 
@@ -103,6 +74,46 @@ public class UIManager : MonoBehaviour {
 
         Debug.Log("Start end");
 	}
+
+    void resetBingoCard(GameObject panel, MyBingoCard bingoCard)
+    {
+        string[] bingoChar = { "B", "I", "N", "G", "O" };
+
+        Rect rtBingoPanel = panel.GetComponent<RectTransform>().rect;//RectTransform은 local 좌표임.
+
+        GameObject number = panel.transform.Find("numberBLine0").gameObject;
+        Rect rtNumberLine = number.GetComponent<RectTransform>().rect;
+
+        float offsetX = rtBingoPanel.min.x;//좌측
+        float offsetY = rtBingoPanel.min.y + (rtNumberLine.height * BINGONUM_COL);//하단
+        Vector3 pos;
+
+        for (int i = 0; i < 5; i++)
+        {
+            int[] columnNums = createColumnNum(i);
+            for (int n = 0; n < 5; n++)
+            {
+                //number = GameObject.Find("number" + bingoChar[i] + "Line" + n);
+                number = panel.transform.Find("number" + bingoChar[i] + "Line" + n).gameObject;
+
+                if (i == 2 && n == 2)
+                    number.GetComponentInChildren<UnityEngine.UI.Text>().text = "FREE";
+                else
+                    number.GetComponentInChildren<UnityEngine.UI.Text>().text = columnNums[n].ToString();
+
+                //MyBingoCard.numbers[i, n] = columnNums[n];
+                bingoCard.numbers[i, n] = number;
+
+                Rect rt = number.GetComponent<RectTransform>().rect;
+
+                pos.x = offsetX + (i * rt.width) + rt.width / 2.0f;
+                pos.y = offsetY - (n * rt.height) - rt.height / 2.0f;
+                pos.z = number.transform.position.z;
+                number.transform.position = panel.transform.TransformPoint(pos);//RectTransform은 local 좌표임. 그래서 월드좌표로 변환해준다.
+            }
+        }
+
+    }
 
     void testBitConvert()
     {
@@ -128,15 +139,33 @@ public class UIManager : MonoBehaviour {
     {
         while(true)
         {
-            Debug.Log("BingoNumber = " + BingoNumbers[BingoCounter].number);
+            //var callerBall = Instantiate(pfCallerBall, new Vector3(100, 100, 0), Quaternion.identity);
+            //callerBall.parent = transform;
+
+            int callerNumber = BingoNumbers[BingoCounter++].number;
+
+            Debug.Log("BingoNumber = " + callerNumber);
             //MyBingoCard.checkNumber(BingoNumbers[BingoCounter++].number);
-            myBingoCard.checkNumber(BingoNumbers[BingoCounter++].number);
+            myBingoCard.checkNumber(callerNumber);
+
+            var callerBall = this.transform.Find("callerBall(Clone)");
+            if(callerBall)
+            {
+                Destroy(callerBall.gameObject);
+            }
+
+            Rect rt = GetComponent<RectTransform>().rect;
+            Vector3 pos = new Vector3(100.0f, rt.height-(pfCallerBall.GetComponent<RectTransform>().rect.height / 2.0f), 0.0f);
+
+            callerBall = Instantiate(pfCallerBall, pos, Quaternion.identity);
+            callerBall.GetComponentInChildren<UnityEngine.UI.Text>().text = callerNumber.ToString();
+            callerBall.parent = transform;
 
             yield return new WaitForSeconds(2);
         }
     }
 
-    private void resetBingoNumber(BingoNumber []bingoNumber)
+    private void resetBingoNumber(BingoNumber []bingoNumber)//게임 진행시 번호호출순서를 섞는다.
     {
         string[] bingoChar = { "B", "I", "N", "G", "O" };
         int count=0;
@@ -154,7 +183,7 @@ public class UIManager : MonoBehaviour {
         BingoCounter = 0;
     }
 
-    private int[] createColumnNum(int c)
+    private int[] createColumnNum(int c)//빙고카드에 각 Column 별로 번호를 지정한다. ex)B라인:1-15, I라인:16-30, N라인:31-45....
     {
         int[] ar = new int[15];
 
@@ -165,7 +194,7 @@ public class UIManager : MonoBehaviour {
         return ar;
     }
 
-    private void shuffle<T>(ref T []ar)
+    private void shuffle<T>(ref T []ar)//배열에 있는 숫자를 섞는다.
     {
         T temp;
         int a=0;

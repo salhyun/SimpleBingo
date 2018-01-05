@@ -77,15 +77,17 @@ LightmapSettings:
     m_PVRDirectSampleCount: 32
     m_PVRSampleCount: 500
     m_PVRBounces: 2
-    m_PVRFiltering: 0
+    m_PVRFilterTypeDirect: 0
+    m_PVRFilterTypeIndirect: 0
+    m_PVRFilterTypeAO: 0
     m_PVRFilteringMode: 1
     m_PVRCulling: 1
     m_PVRFilteringGaussRadiusDirect: 1
     m_PVRFilteringGaussRadiusIndirect: 5
     m_PVRFilteringGaussRadiusAO: 2
-    m_PVRFilteringAtrousColorSigma: 1
-    m_PVRFilteringAtrousNormalSigma: 1
-    m_PVRFilteringAtrousPositionSigma: 1
+    m_PVRFilteringAtrousPositionSigmaDirect: 0.5
+    m_PVRFilteringAtrousPositionSigmaIndirect: 2
+    m_PVRFilteringAtrousPositionSigmaAO: 1
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -1270,11 +1272,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0dced651710c0b944b114496837fe893, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &1066188824 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1064445326777360, guid: 0dced651710c0b944b114496837fe893,
-    type: 2}
-  m_PrefabInternal: {fileID: 169305976}
 --- !u!224 &1066188828 stripped
 RectTransform:
   m_PrefabParentObject: {fileID: 224390592902795946, guid: 0dced651710c0b944b114496837fe893,
@@ -2164,7 +2161,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 1104271755}
   BingoPanel: {fileID: 1949845662}
-  numberLine: {fileID: 1066188824}
+  pfCallerBall: {fileID: 224780731907635590, guid: f064dfe831c09b9439c424dff18fa76d,
+    type: 2}
 --- !u!114 &1530993622
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2729,7 +2727,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 104, y: -16}
   m_SizeDelta: {x: 400, y: 450}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1949845664
