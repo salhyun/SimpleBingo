@@ -21,7 +21,7 @@ public class callerBallAnimation : MonoBehaviour {
     void Start () {
 
         originScale = this.transform.localScale;
-        bAnimation = true;
+        bAnimation = false;
 
         originPosition = this.transform.position;
         centerPosition = this.transform.position;
@@ -32,6 +32,8 @@ public class callerBallAnimation : MonoBehaviour {
     public void startAnimation()
     {
         bAnimation = true;
+        originPosition = transform.position;
+        delta = 0.0f;
     }
 
     Vector3 getCenterPosition()
@@ -60,7 +62,7 @@ public class callerBallAnimation : MonoBehaviour {
 
         value = scaleCurve.Evaluate(delta);
 
-        this.transform.position = originPosition + (translateDirection * rotSpeed * value);
+        transform.position = originPosition + (translateDirection * rotSpeed * value);
 
         //this.transform.localScale = new Vector2(originScale.x * value, originScale.y * value);
         //this.transform.RotateAround(centerPosition, new Vector3(0.0f, 0.0f, -1.0f), rotSpeed * Time.deltaTime);
@@ -68,14 +70,13 @@ public class callerBallAnimation : MonoBehaviour {
         if (delta >= 1.0f)
         {
             bAnimation = false;
-            //restoreButton ();
         }
     }
 
-    public void restoreButton()
+    public void restoreAnimation()
     {
-        this.transform.localScale = originScale;
-        this.transform.rotation = new Quaternion();
+        transform.localScale = originScale;
+        transform.rotation = new Quaternion();
         bAnimation = false;
         delta = 0.0f;
     }
