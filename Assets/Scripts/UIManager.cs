@@ -29,7 +29,7 @@ public class UIManager : MonoBehaviour {
                         {
                             Debug.Log("[" + i + ", " + n + "] = " + numbers[i, n]);
 
-                            UnityEngine.UI.Image img = numbers[i, n].transform.FindChild("marker").gameObject.GetComponent< UnityEngine.UI.Image>();
+                            UnityEngine.UI.Image img = numbers[i, n].transform.Find("marker").gameObject.GetComponent< UnityEngine.UI.Image>();
                             img.color = new Color(img.color.r, img.color.g, img.color.b, 0.3f);
                             return;
                         }
@@ -120,17 +120,17 @@ public class UIManager : MonoBehaviour {
 
     void testBitConvert()
     {
-        int num = 10;
+        //int num = 10;
 
-        byte[] message = MySocketMessage.addMessageHeader(System.Text.Encoding.Default.GetBytes("I am your father"), 12, 32);
+        //byte[] message = MySocketMessage.addMessageHeader(System.Text.Encoding.Default.GetBytes("I am your father"), 12, 32);
 
-        int type = MySocketMessage.getMessageType(message);
-        int kind = MySocketMessage.getMessageKind(message);
-        int size = MySocketMessage.getMessageSize(message);
+        //int type = MySocketMessage.getMessageType(message);
+        //int kind = MySocketMessage.getMessageKind(message);
+        //int size = MySocketMessage.getMessageSize(message);
 
-        string body = MySocketMessage.getMessageBodyString(message);
+        //string body = MySocketMessage.getMessageBodyString(message);
 
-        Debug.Log("testBitConvert");
+        //Debug.Log("testBitConvert");
     }
 	
 	// Update is called once per frame
