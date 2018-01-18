@@ -30,22 +30,24 @@ public class TitleScene : MonoBehaviour {
 
             //여기에 보낸 이후 Response 로직을 작성하시오.
 
-            string echo = MySocketMessage.getMessageBodyString(recvBuf);
-            Debug.Log("echo message = " + echo);
+            string messageBody = MySocketMessage.getMessageBodyString(recvBuf);
+            Debug.Log("echo message = " + messageBody);
 
             stream.Flush();
             stream.Close();
             server.Close();
         }
-
     }
 
     public void clickLogin()
     {
         //UnityEngine.SceneManagement.SceneManager.LoadScene(1);
 
-        string message = "I am your father";
-        byte[] messageBuf = MySocketMessage.addMessageHeader(message, MySocketMessage.MESSAGETYPE_REQUEST, MySocketMessage.MESSAGEKIND_ECHO);
+        //string message = "I am your father";
+        //byte[] messageBuf = MySocketMessage.addMessageHeader(message, MySocketMessage.MESSAGETYPE_REQUEST, MySocketMessage.MESSAGEKIND_ECHO);
+
+        string myAccount = "salhyun1@naver.com";
+        byte[] messageBuf = MySocketMessage.addMessageHeader(myAccount, MySocketMessage.MESSAGETYPE_REQUEST, MySocketMessage.MESSAGEKIND_LOGIN);
 
         CDoLogin doLogin = new CDoLogin();
         doLogin.comm(messageBuf, ClientSocket.SERVERKIND.LOGIN_SERVER);

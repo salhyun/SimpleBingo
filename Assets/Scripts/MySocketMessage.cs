@@ -9,7 +9,7 @@ public class MySocketMessage {
 
     public static int MESSAGEKIND_ECHO = 0;
     public static int MESSAGEKIND_SEARCH = 1;
-    public static int MESSAGEKIND_ACCOUNT = 2;
+    public static int MESSAGEKIND_LOGIN = 2;
 
     private static int MESSAGETYPENUM = 4;//identify + type + kind + size
 

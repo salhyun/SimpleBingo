@@ -69,8 +69,6 @@ public class UIManager : MonoBehaviour {
 
         string[] bingoChar = { "B", "I", "N", "G", "O" };
 
-        testBitConvert();
-
         resetBingoCard(BingoPanel, myBingoCard);
 
         resetBingoNumber(BingoNumbers);
@@ -84,11 +82,23 @@ public class UIManager : MonoBehaviour {
     {
         string[] bingoChar = { "B", "I", "N", "G", "O" };
 
+        float bingoPanelSize = 150.0f;// 400.0f; 5로 나누어 지는 숫자
+        float captionHeight = bingoPanelSize * 0.125f;// 50.0f;
+
+        Rect rtCanvas = this.GetComponent<RectTransform>().rect;
+        //위치, 크기 등을 조정하고
+        panel.GetComponent<RectTransform>().sizeDelta = new Vector2(bingoPanelSize, bingoPanelSize + captionHeight);
+        panel.GetComponent<RectTransform>().position = this.transform.TransformPoint(new Vector2(rtCanvas.min.x+(bingoPanelSize/2), 0.0f));
+
+        //Rect를 얻어와야 적용된 사이즈로 얻어올 수 있다.
         Rect rtBingoPanel = panel.GetComponent<RectTransform>().rect;//RectTransform은 local 좌표임.
-        Rect rtBingoNumber = pfBingoNumber.GetComponent<RectTransform>().rect;
+        //Rect rtBingoNumber = pfBingoNumber.GetComponent<RectTransform>().rect;
+
+        float numWidth = rtBingoPanel.width / 5.0f;
+        float numHeight = numWidth;// rtBingoPanel.height / 5.0f;
 
         float offsetX = rtBingoPanel.min.x;//좌측
-        float offsetY = rtBingoPanel.min.y + (rtBingoNumber.height * BINGONUM_COL);//하단
+        float offsetY = rtBingoPanel.min.y + (numHeight * BINGONUM_COL);//하단
         Vector3 pos;
 
         for (int i = 0; i < 5; i++)
@@ -106,33 +116,27 @@ public class UIManager : MonoBehaviour {
 
                 bingoCard.numbers[i, n] = number;
 
-                Rect rt = number.GetComponent<RectTransform>().rect;
+                //Rect rt = number.GetComponent<RectTransform>().rect;
 
-                pos.x = offsetX + (i * rt.width) + rt.width / 2.0f;
-                pos.y = offsetY - (n * rt.height) - rt.height / 2.0f;
+                pos.x = offsetX + (i * numWidth) + numWidth / 2.0f;
+                pos.y = offsetY - (n * numHeight) - numHeight / 2.0f;
                 pos.z = number.transform.position.z;
                 number.transform.position = panel.transform.TransformPoint(pos);//RectTransform은 local 좌표임. 그래서 월드좌표로 변환해준다.
+
+                number.GetComponent<RectTransform>().sizeDelta = new Vector2(numWidth, numHeight);
+
+                number.transform.Find("back").GetComponent<RectTransform>().sizeDelta = new Vector2(numWidth - 2, numHeight - 2);
+                number.transform.Find("marker").GetComponent<RectTransform>().sizeDelta = new Vector2(numWidth - 2, numHeight - 2);
+                number.transform.Find("Text").GetComponent<RectTransform>().sizeDelta = new Vector2(numWidth - 2, numHeight - 2);
+
+                //number.GetComponentInChildren<UnityEngine.UI.Text>().GetComponent<RectTransform>().sizeDelta = new Vector2(numWidth, numHeight);
+
                 number.transform.parent = panel.transform;
             }
         }
 
     }
 
-    void testBitConvert()
-    {
-        //int num = 10;
-
-        //byte[] message = MySocketMessage.addMessageHeader(System.Text.Encoding.Default.GetBytes("I am your father"), 12, 32);
-
-        //int type = MySocketMessage.getMessageType(message);
-        //int kind = MySocketMessage.getMessageKind(message);
-        //int size = MySocketMessage.getMessageSize(message);
-
-        //string body = MySocketMessage.getMessageBodyString(message);
-
-        //Debug.Log("testBitConvert");
-    }
-	
 	// Update is called once per frame
 	void Update () {
 		
