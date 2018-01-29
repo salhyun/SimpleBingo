@@ -4,42 +4,6 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour {
 
-    public struct MyBingoCard//추상적인 개념의 빙고카드
-    {
-        public GameObject[,] numbers;
-
-        public MyBingoCard(int row, int col)
-        {
-            numbers = new GameObject[col, row];
-        }
-
-        public void checkNumber(int num)
-        {
-            for (int i = 0; i < numbers.GetLength(0); i++)
-            {
-                for (int n = 0; n < numbers.GetLength(1); n++)
-                {
-                    if (i == 2 && n == 2)//FREE
-                    {
-                    }
-                    else
-                    {
-                        int numText = int.Parse(numbers[i, n].GetComponentInChildren<UnityEngine.UI.Text>().text);
-                        if (numText == num)
-                        {
-                            Debug.Log("[" + i + ", " + n + "] = " + numbers[i, n]);
-
-                            UnityEngine.UI.Image img = numbers[i, n].transform.Find("marker").gameObject.GetComponent< UnityEngine.UI.Image>();
-                            img.color = new Color(img.color.r, img.color.g, img.color.b, 0.3f);
-                            return;
-                        }
-                    }
-                }
-            }
-            Debug.Log("no match");
-        }
-    }
-
     struct BingoNumber
     {
         public string bingoChar;
@@ -47,13 +11,11 @@ public class UIManager : MonoBehaviour {
     }
 
     public const int BINGOALLNUM = 75;
-    public const int BINGONUM_ROW = 5;
-    public const int BINGONUM_COL = 5;
 
     private BingoNumber[] mBingoNumbers = new BingoNumber[BINGOALLNUM];
 
-    //private BingoCard MyBingoCard = new BingoCard(BINGONUM_COL, BINGONUM_ROW);
-    private MyBingoCard mMyBingoCard = new MyBingoCard(BINGONUM_COL, BINGONUM_ROW);
+    //private BingoCard myBingoCard = new BingoCard();
+    private BingoCard[] myBingoCards=null;
 
     ArrayList mCallerBalls = new ArrayList();
 
@@ -64,7 +26,7 @@ public class UIManager : MonoBehaviour {
 
     public Camera mMainCamera;
     public Transform mpfCallerBall;
-    public Transform mpfBingoNumber;
+    //public Transform mpfBingoNumber;
 
 	// Use this for initialization
 	void Start () {
@@ -72,7 +34,13 @@ public class UIManager : MonoBehaviour {
         string[] bingoChar = { "B", "I", "N", "G", "O" };
 
         Rect rtCanvas = this.GetComponent<RectTransform>().rect;
-        generateBingoCard("images/bingoCard", new Vector2(rtCanvas.min.x, rtCanvas.max.y), 150.0f);
+
+        myBingoCards = new BingoCard[2];
+        myBingoCards[0] = new BingoCard();
+        myBingoCards[0].initialize("Panigale1", "images/bingoCard", new Vector2(rtCanvas.min.x, rtCanvas.max.y), 150.0f, this.transform);
+
+        myBingoCards[1] = new BingoCard();
+        myBingoCards[1].initialize("Panigale2", "images/bingoCard", new Vector2(rtCanvas.min.x, rtCanvas.max.y - 180.0f), 150.0f, this.transform);
 
         resetBingoNumber(mBingoNumbers);
 
@@ -80,77 +48,6 @@ public class UIManager : MonoBehaviour {
 
         Debug.Log("Start end");
 	}
-
-    void generateBingoCard(string spriteName, Vector2 pos, float size)
-    {
-        GameObject bingoPanel = new GameObject("Panel");
-        bingoPanel.name = "959 PANIGALE";
-        bingoPanel.AddComponent<CanvasRenderer>();
-        UnityEngine.UI.Image image = bingoPanel.AddComponent<UnityEngine.UI.Image>();
-        image.sprite = Resources.Load<Sprite>(spriteName);
-        bingoPanel.transform.parent = this.transform;
-
-        resetBingoCard(bingoPanel, mMyBingoCard, pos, size);//panel size 5로 나누어 지는 숫자
-    }
-
-    void resetBingoCard(GameObject panel, MyBingoCard bingoCard, Vector2 cardPos, float bingoPanelSize)
-    {
-        string[] bingoChar = { "B", "I", "N", "G", "O" };
-
-        //float bingoPanelSize = 150.0f;// 400.0f; 5로 나누어 지는 숫자
-        float captionHeight = bingoPanelSize * 0.125f;// 50.0f;
-
-        Rect rtCanvas = this.GetComponent<RectTransform>().rect;
-        //위치, 크기, pivot 등을 조정하고
-        panel.GetComponent<RectTransform>().sizeDelta = new Vector2(bingoPanelSize, bingoPanelSize + captionHeight);
-        panel.GetComponent<RectTransform>().pivot = new Vector2(0.0f, 1.0f);
-        panel.GetComponent<RectTransform>().position = this.transform.TransformPoint(cardPos);
-
-        //Rect를 얻어와야 적용된 사이즈로 얻어올 수 있다.
-        Rect rtBingoPanel = panel.GetComponent<RectTransform>().rect;//RectTransform은 local 좌표임.
-        //Rect rtBingoNumber = pfBingoNumber.GetComponent<RectTransform>().rect;
-
-        float numWidth = rtBingoPanel.width / 5.0f;
-        float numHeight = numWidth;// rtBingoPanel.height / 5.0f;
-
-        float offsetX = rtBingoPanel.min.x;//좌측
-        float offsetY = rtBingoPanel.min.y + (numHeight * BINGONUM_COL);//하단
-        Vector3 pos;
-
-        for (int i = 0; i < 5; i++)
-        {
-            int[] columnNums = createColumnNum(i);
-            for (int n = 0; n < 5; n++)
-            {
-                GameObject number = Instantiate(mpfBingoNumber, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity).gameObject;
-                number.name = "number" + bingoChar[i] + "Line" + n;
-
-                if (i == 2 && n == 2)
-                    number.GetComponentInChildren<UnityEngine.UI.Text>().text = "FREE";
-                else
-                    number.GetComponentInChildren<UnityEngine.UI.Text>().text = columnNums[n].ToString();
-
-                bingoCard.numbers[i, n] = number;
-
-                //Rect rt = number.GetComponent<RectTransform>().rect;
-
-                pos.x = offsetX + (i * numWidth) + numWidth / 2.0f;
-                pos.y = offsetY - (n * numHeight) - numHeight / 2.0f;
-                pos.z = number.transform.position.z;
-                number.transform.position = panel.transform.TransformPoint(pos);//RectTransform은 local 좌표임. 그래서 월드좌표로 변환해준다.
-
-                number.GetComponent<RectTransform>().sizeDelta = new Vector2(numWidth, numHeight);
-
-                number.transform.Find("back").GetComponent<RectTransform>().sizeDelta = new Vector2(numWidth - 2, numHeight - 2);
-                number.transform.Find("marker").GetComponent<RectTransform>().sizeDelta = new Vector2(numWidth - 2, numHeight - 2);
-                number.transform.Find("Text").GetComponent<RectTransform>().sizeDelta = new Vector2(numWidth - 2, numHeight - 2);
-
-                //number.GetComponentInChildren<UnityEngine.UI.Text>().GetComponent<RectTransform>().sizeDelta = new Vector2(numWidth, numHeight);
-
-                number.transform.parent = panel.transform;
-            }
-        }
-    }
 
 	// Update is called once per frame
 	void Update () {
@@ -165,7 +62,7 @@ public class UIManager : MonoBehaviour {
             Debug.Log("BingoNumber = " + callerNumber);
 
             //Canvas 위치에다가 볼 생성 시킴
-            StartCoroutine(generateCallerBall(callerNumber, mMyBingoCard));
+            StartCoroutine(generateCallerBall(callerNumber));
 
             if (mCallerBalls.Count > 0)
             {
@@ -179,7 +76,7 @@ public class UIManager : MonoBehaviour {
         }
     }
 
-    IEnumerator generateCallerBall(int callerNumber, MyBingoCard bingoCard)
+    IEnumerator generateCallerBall(int callerNumber)
     {
         yield return new WaitForSeconds(0.5f);
 
@@ -206,7 +103,12 @@ public class UIManager : MonoBehaviour {
         mCallerBalls.Add(callerBall.gameObject);
 
         //myBingoCard.checkNumber(callerNumber);
-        bingoCard.checkNumber(callerNumber);
+        //bingoCard.checkNumber(callerNumber);
+
+        foreach(BingoCard card in myBingoCards)
+        {
+            card.checkNumber(callerNumber);
+        }
     }
 
     private void resetBingoNumber(BingoNumber []bingoNumber)//게임 진행시 번호호출순서를 섞는다.
@@ -223,33 +125,10 @@ public class UIManager : MonoBehaviour {
                 bingoNumber[count].bingoChar = bingoChar[n];
             }
         }
-        shuffle(ref bingoNumber);
+
+        //shuffle(ref bingoNumber);
+        BingoCard.shuffle(ref bingoNumber);
+
         mBingoCounter = 0;
     }
-
-    private int[] createColumnNum(int c)//빙고카드에 각 Column 별로 번호를 지정한다. ex)B라인:1-15, I라인:16-30, N라인:31-45....
-    {
-        int[] ar = new int[15];
-
-        for (int i = 0; i < ar.Length; i++)
-            ar[i] = i + (c * 15) + 1;
-
-        shuffle(ref ar);
-        return ar;
-    }
-
-    private void shuffle<T>(ref T []ar)//배열에 있는 숫자를 섞는다.
-    {
-        T temp;
-        int a=0;
-        for (int i=0; i<ar.Length; i++)
-        {
-            a = Random.Range(0, ar.Length);
-            temp = ar[a];
-            ar[a] = ar[i];
-            ar[i] = temp;
-        }
-    }
-
-
 }

@@ -300,6 +300,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\BingoCard.cs" />
     <Compile Include="Assets\Scripts\callerBallAnimation.cs" />
     <Compile Include="Assets\Scripts\ClientSocket.cs" />
     <Compile Include="Assets\Scripts\LobbyScene.cs" />
