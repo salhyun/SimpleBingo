@@ -8,8 +8,11 @@ public class MySocketMessage {
     public static int MESSAGETYPE_RESPONSE = 2;
 
     public static int MESSAGEKIND_ECHO = 0;
-    public static int MESSAGEKIND_SEARCH = 1;
-    public static int MESSAGEKIND_LOGIN = 2;
+	public static int MESSAGEKIND_PINGTEST = 1;
+    public static int MESSAGEKIND_SEARCH = 2;
+    public static int MESSAGEKIND_LOGIN = 3;
+	public static int MESSAGEKIND_LOBBYADDRESS = 4;
+	public static int MESSAGEKIND_LOBBYENTERANCE = 5;
 
     private static int MESSAGETYPENUM = 4;//identify + type + kind + size
 
@@ -32,7 +35,7 @@ public class MySocketMessage {
             Array.Reverse(msgType);
             Array.Reverse(msgKind);
             Array.Reverse(msgSize);
-            //Array.Reverse(messageBuf);//지금은(PC) 문자열은 Big Endian으로 저장된다. 다른 플렛폼에서는 모르겠다
+            //Array.Reverse(messageBuf);//지금은(PC) 문자열은 Big Endian으로 저장된다(int형은 Little Endian). 다른 플렛폼에서는 모르겠다
         }
 
         byte[] result = new byte[totalSize];
@@ -102,7 +105,7 @@ public class MySocketMessage {
             Array.Reverse(buf, mIntSizeInByte * 2, mIntSizeInByte);
             Array.Reverse(buf, mIntSizeInByte * 3, mIntSizeInByte);
 
-            //지금은(PC) 문자열은 Big Endian으로 저장된다. 다른 플렛폼에서는 모르겠다
+            //지금은(PC) 문자열은 Big Endian으로 저장된다.(int형은 Little Endian) 다른 플렛폼에서는 모르겠다
             //int size = getMessageSize(buf);
             //Array.Reverse(buf, mIntSizeInByte * 4, size - mHeaderSize);
         }

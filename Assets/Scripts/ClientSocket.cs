@@ -24,7 +24,8 @@ public class ClientSocket {
     {
         if (serverKind == SERVERKIND.LOGIN_SERVER)
         {
-            server = new TcpClient("127.0.0.1", 9100);
+            //server = new TcpClient("127.0.0.1", 9100);
+			server = new TcpClient("218.54.20.96", 9100);
         }
         else if (serverKind == SERVERKIND.LOBBY_SERVER)
         {
@@ -43,35 +44,65 @@ public class ClientSocket {
         thread.Start();
     }
 
+	public void WriteNRead()
+	{
+		stream.Write(messageBuf, 0, messageBuf.Length);
+
+		int len = 0, nMessageSize = 0;
+
+		len = stream.Read(recvBuf, 0, recvBuf.Length);
+
+		MySocketMessage.convertEndian(recvBuf);
+
+		//유효성 검사
+		int nIdentify = MySocketMessage.getMessageIdentify(recvBuf);
+		if (nIdentify != MySocketMessage.MESSAGE_IDENTIFY)//유효하지 않는 메시지
+		{
+			stream.Flush();
+			stream.Close();
+			server.Close();
+			return;
+		}
+
+		nMessageSize = MySocketMessage.getMessageSize(recvBuf);
+		while (len < nMessageSize)
+		{
+			len += stream.Read(recvBuf, len, recvBuf.Length);
+			//데이타 전송중 중지 되었을 경우 처리
+		}
+	}
+
     public virtual void process()
     {
         connect(serverKind);
 
         stream = server.GetStream();
-        stream.Write(messageBuf, 0, messageBuf.Length);
+		WriteNRead ();
 
-        int len = 0, nMessageSize = 0;
-
-        len = stream.Read(recvBuf, 0, recvBuf.Length);
-
-        MySocketMessage.convertEndian(recvBuf);
-
-        //유효성 검사
-        int nIdentify = MySocketMessage.getMessageIdentify(recvBuf);
-        if (nIdentify != MySocketMessage.MESSAGE_IDENTIFY)//유효하지 않는 메시지
-        {
-            stream.Flush();
-            stream.Close();
-            server.Close();
-            return;
-        }
-
-        nMessageSize = MySocketMessage.getMessageSize(recvBuf);
-        while (len < nMessageSize)
-        {
-            len += stream.Read(recvBuf, len, recvBuf.Length);
-            //데이타 전송중 중지 되었을 경우 처리
-        }
+//        stream.Write(messageBuf, 0, messageBuf.Length);
+//
+//        int len = 0, nMessageSize = 0;
+//
+//        len = stream.Read(recvBuf, 0, recvBuf.Length);
+//
+//        MySocketMessage.convertEndian(recvBuf);
+//
+//        //유효성 검사
+//        int nIdentify = MySocketMessage.getMessageIdentify(recvBuf);
+//        if (nIdentify != MySocketMessage.MESSAGE_IDENTIFY)//유효하지 않는 메시지
+//        {
+//            stream.Flush();
+//            stream.Close();
+//            server.Close();
+//            return;
+//        }
+//
+//        nMessageSize = MySocketMessage.getMessageSize(recvBuf);
+//        while (len < nMessageSize)
+//        {
+//            len += stream.Read(recvBuf, len, recvBuf.Length);
+//            //데이타 전송중 중지 되었을 경우 처리
+//        }
     }
 
 }

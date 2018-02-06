@@ -305,6 +305,7 @@
     <Compile Include="Assets\Scripts\ClientSocket.cs" />
     <Compile Include="Assets\Scripts\LobbyScene.cs" />
     <Compile Include="Assets\Scripts\MySocketMessage.cs" />
+    <Compile Include="Assets\Scripts\pingtest.cs" />
     <Compile Include="Assets\Scripts\TitleScene.cs" />
     <Compile Include="Assets\Scripts\UIManager.cs" />
   </ItemGroup>
